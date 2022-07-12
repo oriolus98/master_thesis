@@ -1,3 +1,5 @@
+### Causal impact of natural and anthropogenic covariates on earth temperature anomaly
+
 # Load and install packages
 
 packages <- c("ggplot2", "readxl", "knitr", 'zoo', 'CausalImpact' )

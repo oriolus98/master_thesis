@@ -1,3 +1,5 @@
+### Causal impact of covid19 restrictions on CO2 daily emissions
+
 # Load and install packages
 
 packages <- c("ggplot2", "readxl", "tidyr", 'dplyr', 'zoo', 'CausalImpact' )
