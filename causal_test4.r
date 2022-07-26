@@ -1,4 +1,4 @@
-### automatitzem per a comparar els resultats del paper amb els nostres per països
+### automatitzem per a comparar els resultats del paper amb els nostres per sectors
 
 # Load and install packages
 
@@ -20,17 +20,18 @@ df <- read_excel("./data/carbon_monitoring.xlsx",
 View(df)
 
 
-for (zone in unique(df$country)) {
-  df_real <- dplyr::filter(df, type == 'actual', country == zone) %>% dplyr::select(-c(type, country))
-  df_sim <- dplyr::filter(df, type == 'baseline', country == zone) %>% dplyr::select(-c(type, country))
+df <- dplyr::filter(df, country == 'WORLD') %>% dplyr::select(-country)
+
+for (sec in unique(df$sector)) {
+  df_real <- dplyr::filter(df, type == 'actual', sector == sec) %>% dplyr::select(-c(type, sector))
+  df_sim <- dplyr::filter(df, type == 'baseline', sector == sec) %>% dplyr::select(-c(type, sector))
   
-  df_real <- pivot_wider(df_real, names_from = 'sector', values_from = 'co2')
-  df_sim <- pivot_wider(df_sim, names_from = 'sector', values_from = 'co2')
+
   
   ### analysis of total emissions 2020
   
-  y <- df_real[366:731,'Total'] # real 2020 pre and covid data
-  x1 <- df_real[1:366, 'Total'] # data from 2019 pre-covid
+  y <- df_real[366:731,'co2'] # real 2020 pre and covid data
+  x1 <- df_real[1:366, 'co2'] # data from 2019 pre-covid
   t <- df_real[366:731, 'date']
   data <- cbind(y, x1, t)
   names(data) <- c('y', 'x1', 'date')
@@ -43,14 +44,14 @@ for (zone in unique(df$country)) {
   
   impact <- CausalImpact(data2, pre.period, post.period)
   
-  tot_em_19_sp <- sum(df_real$Total[1:365]) # emissions totals en 2019
-  tot_em_20_sp <- sum(df_real$Total[366:731]) # emissions totals en 2020
+  tot_em_19_sp <- sum(df_real$co2[1:365]) # emissions totals en 2019
+  tot_em_20_sp <- sum(df_real$co2[366:731]) # emissions totals en 2020
   rel_dec <- (tot_em_19_sp - tot_em_20_sp)*100/tot_em_19_sp
   # Per tant observem una reducció d'emissions (rel_dec, paper) entre 2019 i 2020
   
   rel_dec_covid <- (impact$summary$Pred[2] - impact$summary$Actual[2])*100/impact$summary$Pred[2] # causal impact compute of emissions reduction due to covid19
-
-  print(zone)
+  
+  print(sec)
   print('Paper interannual decay')
   print(rel_dec)
   print('Causal impact covid due decay')
